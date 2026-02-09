@@ -1,0 +1,7 @@
+{
+  "type": "LinearRegression",
+  "trained_at": "2026-02-09T14:33:12.989979",
+  "sequence_length": 10,
+  "training_samples": 3992,
+  "features": 10
+}
