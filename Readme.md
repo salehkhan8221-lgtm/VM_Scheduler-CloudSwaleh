@@ -161,3 +161,10 @@ The system was assessed using the following metrics:
 ## **4. Conclusion:**
 - The **AI/ML-based scheduling system** demonstrated superior performance, particularly in dynamic and unpredictable scenarios.
 - The proactive approach reduced the need for costly migrations and ensured a more balanced server state, proving the viability of machine learning for optimizing cloud infrastructure.
+
+## 📁 Project Structure
+
+- app/ → core application logic  
+- data/ → dataset  
+- docs/ → documentation  
+- Dockerfile → container setup  

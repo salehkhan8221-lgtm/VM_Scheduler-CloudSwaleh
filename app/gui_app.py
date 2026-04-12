@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from app.data_processor import DataProcessor
 from model_manager import ModelManager
 from app.vm_allocator import VMAllocator
-from metrics_tracker import MetricsTracker
+from app.metrics_tracker import MetricsTracker
 
 # ==================== STREAMLIT CONFIG ====================
 st.set_page_config(
