@@ -1,0 +1,15 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local model cache and generated artifacts
+model_cache/
+
+# Python and environment metadata
+.conda/
+.zencoder/
+.zenflow/
+
+# Jupyter notebook checkpoint files
+.ipynb_checkpoints/
