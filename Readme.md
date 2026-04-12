@@ -162,9 +162,15 @@ The system was assessed using the following metrics:
 - The **AI/ML-based scheduling system** demonstrated superior performance, particularly in dynamic and unpredictable scenarios.
 - The proactive approach reduced the need for costly migrations and ensured a more balanced server state, proving the viability of machine learning for optimizing cloud infrastructure.
 
-## 📁 Project Structure
+## 📁 Clean Project Structure
 
-- app/ → core application logic  
-- data/ → dataset  
-- docs/ → documentation  
-- Dockerfile → container setup  
+app/ → core logic  
+data/ → dataset  
+docs/ → documentation  
+
+Run using Docker:
+docker build -t vm-schedular .
+docker run -p 8501:8501 vm-schedular
+
+Open in Browser:
+http://localhost:8501/
