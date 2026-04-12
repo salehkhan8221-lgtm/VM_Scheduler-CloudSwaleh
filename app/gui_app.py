@@ -14,9 +14,9 @@ import sys
 # Add current directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from data_processor import DataProcessor
+from app.data_processor import DataProcessor
 from model_manager import ModelManager
-from vm_allocator import VMAllocator
+from app.vm_allocator import VMAllocator
 from metrics_tracker import MetricsTracker
 
 # ==================== STREAMLIT CONFIG ====================
@@ -83,11 +83,22 @@ with st.sidebar:
         if uploaded_file:
             try:
                 with st.spinner("Loading dataset..."):
-                    df = st.session_state.data_processor.load_dataset(uploaded_file.name)
+                    # Pass the uploaded file-like object directly to the DataProcessor
+                    df = st.session_state.data_processor.load_dataset(uploaded_file)
                 st.success("✅ Dataset loaded successfully!")
                 st.write(f"Shape: {df.shape}")
             except Exception as e:
                 st.error(f"Error loading dataset: {e}")
+        # Provide a built-in example CSV for quick testing
+        if st.button("Load Example CSV"):
+            try:
+                example_path = Path(__file__).parent / "Dataset" / "example_cpu_usage.csv"
+                with st.spinner("Loading example dataset..."):
+                    df = st.session_state.data_processor.load_dataset(str(example_path))
+                st.success("✅ Example dataset loaded!")
+                st.write(f"Shape: {df.shape}")
+            except Exception as e:
+                st.error(f"Error loading example dataset: {e}")
     
     else:  # Generate Synthetic Data
         st.write("**Synthetic Data Generator**")

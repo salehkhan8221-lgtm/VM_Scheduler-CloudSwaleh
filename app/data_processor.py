@@ -37,25 +37,42 @@ class DataProcessor:
         """
         if file_path is None:
             file_path = self.dataset_path
-        
+
         if file_path is None:
             raise ValueError("No file path provided")
-        
-        logger.info(f"Loading dataset from {file_path}")
-        
+
+        # Support both file path (str) and file-like objects (e.g., Streamlit UploadedFile)
+        logger.info(f"Loading dataset from {getattr(file_path, 'name', file_path)}")
+
         try:
-            if file_path.endswith('.csv'):
-                self.df = pd.read_csv(file_path, dtype={'CPUUsage': 'float32'})
+            # If a file-like object is provided (has a read attribute), let pandas handle it
+            if hasattr(file_path, 'read'):
+                name = getattr(file_path, 'name', '') or ''
+                # Infer type from filename when possible
+                if name.lower().endswith('.csv') or name == '':
+                    # pandas can read bytes/stream directly
+                    self.df = pd.read_csv(file_path, dtype={'CPUUsage': 'float32'})
+                else:
+                    # For other text formats (e.g., .txt), decode and use numpy
+                    import io
+                    content = file_path.read()
+                    if isinstance(content, bytes):
+                        content = content.decode('utf-8')
+                    self.df = pd.DataFrame(np.loadtxt(io.StringIO(content), dtype='float32'), columns=['CPUUsage'])
+
             else:
-                # For TXT files - assume single column format
-                data = np.loadtxt(file_path, dtype='float32')
-                self.df = pd.DataFrame(data, columns=['CPUUsage'])
-            
+                # file_path is a filesystem path
+                if str(file_path).lower().endswith('.csv'):
+                    self.df = pd.read_csv(file_path, dtype={'CPUUsage': 'float32'})
+                else:
+                    data = np.loadtxt(file_path, dtype='float32')
+                    self.df = pd.DataFrame(data, columns=['CPUUsage'])
+
             # Memory optimization
             self._optimize_memory()
             logger.info(f"Dataset loaded successfully. Shape: {self.df.shape}")
             return self.df
-        
+
         except Exception as e:
             logger.error(f"Error loading dataset: {e}")
             raise
