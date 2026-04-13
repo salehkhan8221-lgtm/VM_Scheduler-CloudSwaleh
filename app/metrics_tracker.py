@@ -202,6 +202,14 @@ class MetricsTracker:
         
         values = df[metric].values
         
+        # Ensure values are numeric
+        try:
+            values = np.asarray(values, dtype=float)
+            if np.isnan(values).all():
+                return {}
+        except (ValueError, TypeError):
+            return {}
+        
         # Calculate moving average
         moving_avg = pd.Series(values).rolling(window).mean()
         

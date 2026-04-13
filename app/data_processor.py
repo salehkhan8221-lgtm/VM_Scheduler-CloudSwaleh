@@ -8,7 +8,8 @@ import numpy as np
 from pathlib import Path
 import logging
 from functools import lru_cache
-from typing import Tuple, Dict, List, Optional
+from typing import Tuple, Dict, List, Optional, Union
+from io import IOBase
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ class DataProcessor:
         self.stats = {}
         self.last_synthetic_seed = None
     
-    def load_dataset(self, file_path: Optional[str] = None) -> pd.DataFrame:
+    def load_dataset(self, file_path: Optional[Union[str, IOBase]] = None) -> pd.DataFrame:
         """
         Load dataset efficiently with memory optimization.
         
