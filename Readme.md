@@ -326,6 +326,6 @@ Potential directions for extending the project include:
 
 ## Author
 
-**Swaleh Khan**
+**Mohammad Swaleh Khan**
 
 This project demonstrates the application of machine learning and cloud simulation to **predict workload demand and improve VM scheduling decisions**.
