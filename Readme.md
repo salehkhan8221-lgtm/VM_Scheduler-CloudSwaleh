@@ -1,5 +1,9 @@
 # AI-Powered VM Scheduler for Cloud Computing
 
+## 🚀 Live Demo
+
+👉 [Launch VM Scheduler CloudSim](https://vmscheduler-cloudswaleh-ynkpsp93kgjpfsfpfczpva.streamlit.app/)
+
 > **Predictive workload forecasting for proactive Virtual Machine (VM) scheduling and resource optimization in cloud environments.**
 
 [![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)
