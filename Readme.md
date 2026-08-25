@@ -1,176 +1,331 @@
-# PROBLEM STATEMENT
+# AI-Powered VM Scheduler for Cloud Computing
 
-In cloud computing environments, efficiently scheduling Virtual Machines (VMs) onto a limited number of servers is a critical and complex task. Given M VMs and N servers (where M >> N),\
-VM-1=>N\
-VM-2=>N\
-VM-3=>N\
-..\
-..\
-VM-M=>N.
+> **Predictive workload forecasting for proactive Virtual Machine (VM) scheduling and resource optimization in cloud environments.**
 
-the problem becomes exponentially complex, with a total of M^N possible configurations. This combinatorial nature renders VM scheduling an NP-hard problem, making it challenging to achieve optimal resource utilization.
+[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)
+[![CloudSim](https://img.shields.io/badge/CloudSim-Simulation-orange)](https://www.cloudbus.org/cloudsim/)
+[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)](https://www.docker.com/)
+[![Machine Learning](https://img.shields.io/badge/ML-Time--Series%20Forecasting-green)](https://scikit-learn.org/)
 
-Traditional VM scheduling algorithms rely on static or heuristic-based approaches, which often result in suboptimal server states—either underloaded, overloaded, or balanced—depending on the varying demands placed on the infrastructure. These methods typically involve three key stages: VM selection, VM placement, and VM migration. However, they may not effectively anticipate the dynamic nature of incoming workloads, leading to inefficiencies such as increased energy consumption, longer processing times, and reduced overall system performance.
+## Overview
 
-The objective of this project is to address these challenges by leveraging AI/ML techniques to predict CPU workloads in advance, enabling a more informed and proactive VM scheduling strategy. By accurately forecasting the expected workload, the system can preemptively allocate resources, thereby optimizing VM placement and reducing the need for reactive scheduling interventions. The AI/ML-based approach aims to converge on an optimal balance between energy consumption and processing time, ensuring that the cloud infrastructure operates at peak efficiency.
+Cloud infrastructure must continuously decide **which VMs should run on which physical servers** while balancing resource utilization, energy consumption, scheduling overhead, and response time.
 
-This predictive model will be benchmarked against traditional heuristic approaches, which use pre-existing information to guide VM scheduling decisions. The comparison will focus on the effectiveness of workload predictions in minimizing scheduling overhead and achieving a more balanced server state, as well as the system’s ability to adapt to fluctuations in demand. The ultimate goal is to demonstrate that AI/ML-driven scheduling can not only enhance resource utilization but also significantly improve the overall performance and sustainability of cloud computing environments.
+With **M VMs and N servers (M >> N)**, the number of possible VM-to-server configurations grows to **M^N**, making optimal scheduling computationally challenging. Traditional heuristic approaches are often reactive: they make placement and migration decisions using currently available information rather than anticipating future workload.
 
-# [Phase 1](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%201): Data Analysis and Insight
+This project explores an **AI/ML-driven VM scheduling strategy** that predicts upcoming CPU utilization and uses those predictions to make more proactive scheduling decisions.
 
-To gather, prepare, and analyze the dataset to understand the CPU usage patterns. This will provide foundational insights for building predictive models and optimizing resource scheduling in subsequent phases.
+### Core Idea
 
-## **1. Data Collection:**
-- CPU usage data was collected from CloudSim simulations, representing real-world cloud environments.
-- The dataset originally consist of 348 files, each containing 288 CPU usage values. These files were merged into a single dataset with over 100,000 data points to facilitate comprehensive modeling.
+```text
+Historical CPU Usage
+        │
+        ▼
+Data Preparation & Feature Engineering
+        │
+        ▼
+CPU Workload Prediction
+        │
+        ▼
+Predicted Future Demand
+        │
+        ▼
+Proactive VM Placement / Migration
+        │
+        ▼
+CloudSim Simulation
+        │
+        ▼
+Performance Comparison
+(AI/ML vs Heuristic)
+```
 
-## **2. Data Preparation:**
-### **Column Standardization:**
-- Ensured consistency in column naming conventions, with Timestamp and CPU_Usage being cleaned and standardized for easier manipulation.
-
-### **Timestamp Formatting:**
-- Converted the Timestamp data into a proper datetime format (%d-%m-%Y %H:%M), ensuring correct interpretation of date and time values.
-
-### **Feature Engineering:**
-- Extracted the Hour from each timestamp to analyze CPU usage patterns on an hourly basis.
-
-## **3. Data Analysis:**
-### **Hourly CPU Usage Calculation:**
-- The dataset was grouped by the hour of the day to compute the average CPU usage for each hour.
-This analysis helped in visualizing CPU load distribution throughout the day and identifying periods of peak and low usage.
-
-### **Peak Usage Identification:**
-- By calculating the average CPU usage per hour, the peak hour (the hour with the highest average CPU load) was determined, providing insight into the time of day when system resources are most strained.
-
-## **4. Results:**
-The [CPU usage analysis](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/blob/main/Phase%201/CPU_usage_analysis.ipynb) revealed that the peak CPU usage occurred at Hour X, with an average CPU utilization of Y%.
-
-# [Phase 2](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%202): Model Development and Evaluation
-
-To develop, evaluate, and refine machine learning models aimed at predicting CPU usage and optimizing scheduling strategies based on the insights gained from Phase 1 outlined below:
-
-## **1. Data Preprocessing:**
-- The raw data was cleaned and consolidated into a single dataset for easier analysis.
-- Unnecessary columns were removed, and missing values were handled to ensure data quality.
-- Feature engineering was performed by creating a "Next_CPU_Usage" column, shifting the data to model future predictions.
-
-## **2. Modeling:**
-Models were trained on the preprocessed dataset and evaluated using metrics such as Mean Squared Error (MSE) and R-Squared (R2) score to gauge prediction accuracy.
-Three predictive models were comapred to forecast the CPU usage:
-- Linear Regression
-- Gated Recurrent Unit (GRU)
-- Bidirectional LSTM
-  
-### 1. [**Linear Regression**](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/blob/main/Phase%202/Modeling/01_Linear%20Regression.ipynb)
-- **R² Score**: ~0.62
-- **Strengths**:
-  - Simple and easy to implement.
-  - Fast training and prediction time.
-  - Comparable accuracy to more complex models.
-- **Weaknesses**:
-  - Assumes linear relationships, which may not fully capture complex patterns.
+The objective is to find a better balance between **resource utilization and system efficiency**, while reducing unnecessary reactive scheduling decisions.
 
 ---
 
-### 2. [**GRU (Gated Recurrent Unit)**](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/blob/main/Phase%202/Modeling/02_GRU%20Model.ipynb)
-- **R² Score**: ~0.62
-- **Strengths**:
-  - Captures temporal dependencies in time series data.
-  - Faster and less complex than LSTM.
-- **Weaknesses**:
-  - Longer training time compared to Linear Regression.
-  - Minimal improvement in accuracy over simpler models.
+## Project Goals
+
+- Forecast future CPU workload using machine learning.
+- Use workload predictions to improve VM placement decisions.
+- Integrate the predictive model with a CloudSim-based scheduling framework.
+- Compare predictive scheduling against traditional heuristic-based scheduling.
+- Evaluate the system using resource utilization, energy consumption, scheduling overhead, and response time.
 
 ---
 
-### 3. [**Bidirectional LSTM**](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/blob/main/Phase%202/Modeling/03_Bidirectional%20LSTM.ipynb)
-- **R² Score**: ~0.61
-- **Strengths**:
-  - Captures both past and future dependencies in the data.
-  - Good for handling complex time series patterns.
-- **Weaknesses**:
-  - High computational cost and slower training time.
-  - No significant accuracy improvement over simpler models.
+# Project Workflow
+
+The project is organized into four phases.
+
+## Phase 1 — Data Analysis & Insights
+
+**Objective:** Understand CPU utilization patterns and prepare the data for predictive modeling.
+
+[Open Phase 1 →](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%201)
+
+### Data Collection
+
+- CPU utilization data was generated through **CloudSim simulations**.
+- The original dataset contained **348 files**, each with **288 CPU usage observations**.
+- The files were consolidated into a single dataset containing **100,000+ observations**.
+
+### Data Preparation
+
+- Standardized column names such as `Timestamp` and `CPU_Usage`.
+- Converted timestamps to the `%d-%m-%Y %H:%M` datetime format.
+- Extracted the **hour of day** as a feature for workload analysis.
+
+### Analysis
+
+The dataset was grouped by hour to calculate average CPU utilization and identify periods of relatively high and low workload.
+
+📓 **Analysis notebook:**  
+[CPU Usage Analysis](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/blob/main/Phase%201/CPU_usage_analysis.ipynb)
+
+> **Note:** The source README currently contains placeholder values (`Hour X` and `Y%`) for the exact peak-hour result. The actual value should be added from the analysis notebook before publishing the final README.
 
 ---
 
-### Conclusion
-- **Linear Regression** was selected as the primary model due to its simplicity, faster training time, and comparable performance to more complex models like **GRU** and **Bidirectional LSTM**.
+## Phase 2 — Model Development & Evaluation
 
+**Objective:** Build and compare models capable of forecasting future CPU utilization.
 
-## **3. Results:**
-- The models were compared based on their ability to predict the next 10 CPU usage values. The evaluation metrics indicated that the simple **Linear Regression** model provided the best performance, but further optimization is required to improve accuracy.
+[Open Phase 2 →](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%202)
 
-# [Phase 3](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%203): Model Integration
+### Preprocessing
 
-To integrate the predictive models developed in Phase 2 into the VM scheduling framework, enabling real-time workload predictions to optimize resource allocation.
+- Consolidated the raw CPU utilization data.
+- Removed unnecessary columns.
+- Handled missing values.
+- Created a `Next_CPU_Usage` target by shifting CPU usage values to represent future workload.
 
-## **1. Framework Selection:**
-- **CloudSim** was chosen as the simulation framework for modeling and evaluating VM scheduling in a cloud environment.
-- **Eclipse IDE** was used to facilitate seamless integration and debugging of the components.
+### Models Evaluated
 
-## **2. Integration Steps:**
-### **Model Deployment:**
-- The trained **Linear Regression** model was exported as a serialized object and integrated into the CloudSim simulation workflow.
-- Predictions were fed into the VM allocation policy to proactively assign resources based on anticipated workloads.
+| Model | R² Score | Key Characteristics |
+|---|---:|---|
+| **Linear Regression** | ~0.62 | Simple, fast, and comparatively efficient |
+| **GRU** | ~0.62 | Captures temporal dependencies with lower complexity than LSTM |
+| **Bidirectional LSTM** | ~0.61 | Captures complex sequential dependencies but has higher computational cost |
 
-### **Scheduling Algorithm Updates:**
-- Enhanced the default VM allocation policy in CloudSim to account for predicted CPU usage values.
-- The algorithm dynamically adjusted VM placement and migration strategies based on forecasted demand, aiming to reduce system strain during peak periods.
+### Model Comparison
 
-### **Real-Time Simulation:**
-- Simulated real-world scenarios by injecting workload data and observing how the system responded to predicted demands.
-- Ensured smooth interaction between the predictive model and the CloudSim framework.
+#### 1. Linear Regression
 
-## **3. Results:**
-- Successful integration of workload predictions into the VM scheduling process.
-- Observed initial improvements in system performance, with more balanced resource utilization compared to heuristic-based methods.
+[View notebook →](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/blob/main/Phase%202/Modeling/01_Linear%20Regression.ipynb)
+
+**Strengths**
+- Simple to implement.
+- Fast training and inference.
+- Comparable predictive performance to the more complex models tested.
+
+**Limitation**
+- Assumes a linear relationship and may not capture complex nonlinear workload patterns.
+
+#### 2. GRU — Gated Recurrent Unit
+
+[View notebook →](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/blob/main/Phase%202/Modeling/02_GRU%20Model.ipynb)
+
+**Strengths**
+- Captures temporal dependencies.
+- Less complex than LSTM.
+- Suitable for sequential workload data.
+
+**Limitations**
+- Longer training time than Linear Regression.
+- Provided minimal improvement in predictive accuracy in this experiment.
+
+#### 3. Bidirectional LSTM
+
+[View notebook →](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/blob/main/Phase%202/Modeling/03_Bidirectional%20LSTM.ipynb)
+
+**Strengths**
+- Models complex sequential patterns.
+- Captures dependencies across the sequence.
+
+**Limitations**
+- Higher computational cost.
+- Slower training.
+- Did not provide a significant accuracy improvement in this experiment.
+
+### Model Selection
+
+**Linear Regression** was selected for integration because it delivered comparable predictive performance while offering substantially lower complexity and faster training/inference.
 
 ---
 
-# [Phase 4](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%204): System Evaluation and Comparison
+## Phase 3 — Model Integration
 
-To evaluate the integrated system's performance and compare AI/ML-based scheduling with traditional heuristic approaches.
+**Objective:** Integrate the selected predictive model into the VM scheduling framework.
 
-## **1. Evaluation Metrics:**
-The system was assessed using the following metrics:
-- **Resource Utilization**: Percentage of server resources actively in use.
-- **Energy Efficiency**: Total energy consumed during the simulation.
-- **Scheduling Overhead**: Time and computational resources required for scheduling decisions.
-- **Response Time**: Average time taken to handle incoming workloads.
+[Open Phase 3 →](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%203)
 
-## **2. Benchmarking:**
-### **AI/ML-Based Scheduling:**
-- Leveraged the predictions from the **Linear Regression** model for VM allocation.
-- Proactively adjusted resources based on anticipated demand, minimizing reactive migrations.
+### Framework
 
-### **Heuristic-Based Scheduling:**
-- Used static rules and pre-existing information to allocate resources.
-- Reactive in nature, often resulting in higher energy consumption and scheduling overhead.
+- **CloudSim** — cloud infrastructure simulation and VM scheduling.
+- **Eclipse IDE** — development, integration, and debugging environment.
+- **Linear Regression** — selected CPU workload prediction model.
 
-## **3. Results:**
-- **AI/ML-Based Approach**:
-  - Achieved **10–15% improvement in resource utilization**.
-  - Reduced energy consumption by **8–12%** compared to heuristic methods.
-  - Lower scheduling overhead due to predictive allocation strategies.
+### Integration Process
 
-- **Heuristic-Based Approach**:
-  - Struggled to adapt to fluctuations in demand, leading to higher reactive costs.
-  - Energy consumption and processing times were significantly higher.
+1. Export the trained Linear Regression model as a serialized object.
+2. Integrate the model into the CloudSim simulation workflow.
+3. Feed predicted CPU utilization into the VM allocation policy.
+4. Adjust VM placement and migration decisions using anticipated workload.
+5. Simulate changing workload conditions and observe system behavior.
 
-## **4. Conclusion:**
-- The **AI/ML-based scheduling system** demonstrated superior performance, particularly in dynamic and unpredictable scenarios.
-- The proactive approach reduced the need for costly migrations and ensured a more balanced server state, proving the viability of machine learning for optimizing cloud infrastructure.
+### Result
 
-## 📁 Clean Project Structure
+The predictive model was integrated successfully into the VM scheduling process, with initial observations indicating more balanced resource utilization compared with the heuristic-based approach.
 
-app/ → core logic  
-data/ → dataset  
-docs/ → documentation  
+---
 
-Run using Docker:
-docker build -t vm-schedular .
-docker run -p 8501:8501 vm-schedular
+## Phase 4 — System Evaluation & Benchmarking
 
-Open in Browser:
+**Objective:** Evaluate the integrated system and compare predictive scheduling with traditional heuristic scheduling.
+
+[Open Phase 4 →](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%204)
+
+### Evaluation Metrics
+
+| Metric | What it measures |
+|---|---|
+| **Resource Utilization** | Percentage of available server resources actively utilized |
+| **Energy Efficiency** | Total energy consumed during simulation |
+| **Scheduling Overhead** | Computational/time cost of scheduling decisions |
+| **Response Time** | Time required to handle incoming workloads |
+
+### AI/ML-Based Scheduling
+
+The predictive scheduler uses forecasted CPU utilization to make proactive allocation decisions and reduce dependence on reactive migrations.
+
+### Heuristic-Based Scheduling
+
+The baseline scheduler relies on static rules and existing workload information, making it more reactive to workload fluctuations.
+
+### Reported Results
+
+| Metric | Reported Improvement |
+|---|---:|
+| Resource Utilization | **10–15% improvement** |
+| Energy Consumption | **8–12% reduction** |
+| Scheduling Overhead | **Lower than heuristic approach** |
+
+> These figures are reported in the current project documentation and should be interpreted in the context of the project's simulation setup and evaluation methodology.
+
+---
+
+# Technology Stack
+
+| Category | Technology |
+|---|---|
+| Programming / Analysis | Python |
+| Machine Learning | Linear Regression, GRU, Bidirectional LSTM |
+| Cloud Simulation | CloudSim |
+| Development | Eclipse IDE |
+| Containerization | Docker |
+| Data Processing | Pandas / Python data-processing workflow |
+| Model Evaluation | MSE, R² |
+| Interface | Streamlit |
+
+---
+
+# Repository Structure
+
+```text
+VM_Scheduler-CloudSwaleh/
+│
+├── Phase 1/
+│   └── CPU_usage_analysis.ipynb
+│
+├── Phase 2/
+│   └── Modeling/
+│       ├── 01_Linear Regression.ipynb
+│       ├── 02_GRU Model.ipynb
+│       └── 03_Bidirectional LSTM.ipynb
+│
+├── Phase 3/
+│   └── CloudSim integration
+│
+├── Phase 4/
+│   └── Evaluation and comparison
+│
+├── app/
+│   └── Core application logic
+│
+├── data/
+│   └── Dataset
+│
+└── docs/
+    └── Documentation
+```
+
+> The structure above reflects the project organization described in the current README. Add or adjust individual filenames if the repository contains additional files.
+
+---
+
+# Running the Application with Docker
+
+### 1. Build the image
+
+```bash
+docker build -t vm-scheduler .
+```
+
+### 2. Start the container
+
+```bash
+docker run -p 8501:8501 vm-scheduler
+```
+
+### 3. Open the application
+
+Open:
+
+```text
 http://localhost:8501/
+```
+
+If the application is running on another machine or server, replace `localhost` with that machine's accessible host/IP address and ensure port `8501` is exposed through the relevant network or firewall configuration.
+
+---
+
+# Key Takeaways
+
+- VM scheduling is a computationally challenging optimization problem.
+- Forecasting CPU utilization enables **proactive** rather than purely reactive scheduling.
+- Three predictive approaches were evaluated: **Linear Regression, GRU, and Bidirectional LSTM**.
+- Linear Regression was selected because its predictive performance was comparable while being significantly simpler and faster.
+- The integrated predictive scheduling approach reported improvements in resource utilization and energy consumption relative to the heuristic baseline.
+- CloudSim provides the simulation environment for evaluating scheduling behavior before deployment in real infrastructure.
+
+---
+
+# Future Improvements
+
+Potential directions for extending the project include:
+
+- Improving workload forecasting accuracy with richer temporal and system-level features.
+- Evaluating additional forecasting and ensemble models.
+- Performing broader hyperparameter tuning for recurrent models.
+- Testing the scheduler under more diverse workload patterns.
+- Conducting larger-scale experiments with different VM/server configurations.
+- Adding automated experiment tracking and reproducible benchmarking.
+
+---
+
+## Project Links
+
+- **Repository:** [VM_Scheduler-CloudSwaleh](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh)
+- **Phase 1 — Data Analysis:** [View Phase 1](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%201)
+- **Phase 2 — Model Development:** [View Phase 2](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%202)
+- **Phase 3 — Integration:** [View Phase 3](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%203)
+- **Phase 4 — Evaluation:** [View Phase 4](https://github.com/salehkhan8221-lgtm/VM_Scheduler-CloudSwaleh/tree/main/Phase%204)
+
+---
+
+## Author
+
+**Swaleh Khan**
+
+This project demonstrates the application of machine learning and cloud simulation to **predict workload demand and improve VM scheduling decisions**.
